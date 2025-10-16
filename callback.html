@@ -1,52 +1,13 @@
-<!doctype html>
-<html lang="en">
-<meta charset="utf-8" />
-<meta http-equiv="Cache-Control" content="no-store" />
-<meta http-equiv="Pragma" content="no-cache" />
-<meta name="referrer" content="no-referrer" />
-<title>CLI Sign-in Complete</title>
-<style>
-  body { font-family: system-ui, sans-serif; max-width: 600px; margin: 10vh auto; padding: 1rem; }
-  .code { font: 600 18px ui-monospace, monospace; padding: .4rem .6rem; border: 1px solid #ccc; border-radius: 8px; }
-  .row { display: flex; gap: .5rem; align-items: center; }
-  button { border: 1px solid #999; border-radius: 8px; background: none; padding: .4rem .8rem; cursor: pointer; }
-  .ok { color: #070; }
-</style>
-<body>
+<!doctype html><meta charset="utf-8"><title>CLI Sign-in</title>
+<style>body{font-family:system-ui;margin:10vh auto;max-width:600px} .code{font:600 18px ui-monospace,monospace;border:1px solid #ccc;border-radius:8px;padding:.4rem .6rem}</style>
 <h1>Sign-in complete</h1>
-<p>Return to your terminal and paste the authorization code.</p>
-<form id="f" method="post">
-  <input type="hidden" name="code" />
-  <input type="hidden" name="state" />
-</form>
-<div class="row">
-  <span class="code" id="masked">••••</span>
-  <button id="copy">Copy</button>
-</div>
-<p class="ok" id="msg" hidden>Code copied to clipboard.</p>
+<p>Paste this authorization code into your terminal:</p>
+<div class="code" id="masked">••••</div>
+<button id="copy">Copy</button>
 <script>
-(() => {
-  // Parse form_post data
-  const params = new URLSearchParams(window.location.search);
-  // Browsers often hand us the form body via 'document.forms[0]' for form_post
-  const form = document.forms[0];
-  const data = new FormData(form);
-  const code = data.get('code') || params.get('code');
-  const state = data.get('state') || params.get('state');
-  if (!code) { document.body.innerHTML = "<h1>Missing code</h1>"; return; }
-
-  // Masked display
-  document.getElementById('masked').textContent =
-    code.length <= 8 ? '••••' : code.slice(0,4) + '…' + code.slice(-4);
-
-  // Copy on click
-  document.getElementById('copy').addEventListener('click', async () => {
-    try {
-      await navigator.clipboard.writeText(code);
-      const m=document.getElementById('msg'); m.hidden=false;
-    } catch(e){ alert('Copy failed.'); }
-  });
-})();
+const p=new URLSearchParams(location.hash.slice(1));
+const code=p.get('code'); if(!code){document.body.innerHTML='<h1>Missing code</h1>';throw 0;}
+document.getElementById('masked').textContent = code.length<=8?'••••':code.slice(0,4)+'…'+code.slice(-4);
+document.getElementById('copy').onclick=()=>navigator.clipboard.writeText(code);
+history.replaceState(null,'',location.pathname); // scrub fragment from history bar
 </script>
-</body>
-</html>
